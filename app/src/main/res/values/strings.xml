@@ -12,6 +12,6 @@
     <string name="hello_upload_fragment">Hello Upload Fragment</string>
     <string name="hello_live_fragment">Hello Live Fragment</string>
     <string name="hello_list_videos_fragment">Hello List Videos Fragment</string>
-    <string name="select_file">Select File</string>
+    <string name="select_file">Select Video File</string>
 
 </resources>
