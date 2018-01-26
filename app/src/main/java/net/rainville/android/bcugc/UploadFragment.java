@@ -25,6 +25,8 @@ import com.amazonaws.mobileconnectors.s3.transferutility.TransferObserver;
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferListener;
 import com.amazonaws.services.s3.AmazonS3Client;
 
+import org.json.JSONException;
+
 import java.io.File;
 import java.io.FileDescriptor;
 import java.io.FileNotFoundException;
@@ -54,7 +56,7 @@ public class UploadFragment extends Fragment {
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
 
-    private static final String TAG = "BGUGC Download";
+    private static final String TAG = "BGUGC-Download";
     private static final int READ_REQUEST_CODE = 42;
 
     // TODO: Rename and change types of parameters
@@ -223,7 +225,7 @@ public class UploadFragment extends Fragment {
         return displayName;
     }
 
-
+/*
     private String GetRealPathFromURI(Uri uri)
     {
         String thePath;
@@ -239,7 +241,7 @@ public class UploadFragment extends Fragment {
         }
         return thePath;
     }
-
+*/
     public File getFileFromInputStream(Uri uri, String displayName) {
         // File file = new File(getContext().getCacheDir(), "TempVideoFile.save");
         File file;
@@ -261,6 +263,7 @@ public class UploadFragment extends Fragment {
         return (file);
     }
 
+
     public void uploadData(Uri uri, String displayName) {
 
         // String thePath = GetRealPathFromURI(uri);
@@ -277,20 +280,20 @@ public class UploadFragment extends Fragment {
         // URI(URLEncoder.encode(uri.toString(), "UTF-8"));
         // URI juri = URI(URLEncoder.encode(uri.toString(), "UTF-8"));
         File theFile = getFileFromInputStream(uri, displayName);
-        /*
+
+        String bucketName = null;
+        // bcugcwest-userfiles-mobilehub-231872367.s3.amazonaws.com
+        // bucketName will contain my bucket. So I need to append s3.amazonaws.com/uploads/<file name>
         try {
-            URI juri = new URI(uri.toString());
-            theFile = new File(juri);
-        } catch (URISyntaxException e) {
-            e.printStackTrace();
-            theFile = null;
+            bucketName = AWSMobileClient.getInstance().getConfiguration().optJsonObject("S3TransferUtility").getString("Bucket");
+        } catch (JSONException e) {
+            Log.d(TAG, "Could not find bucket. ");
         }
-        */
-
-
+        String cdnUrl = "https://" + bucketName + ".s3.amazonaws.com/public/" + displayName;
+        Log.d(TAG, "CDN URL: " + cdnUrl);
         TransferObserver uploadObserver =
                 transferUtility.upload(
-                        "s3Folder/s3Key.txt",
+                        "public/" + displayName,
                         theFile);
 
         uploadObserver.setTransferListener(new TransferListener() {
