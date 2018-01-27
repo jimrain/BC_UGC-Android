@@ -13,5 +13,8 @@
     <string name="hello_live_fragment">Hello Live Fragment</string>
     <string name="hello_list_videos_fragment">Hello List Videos Fragment</string>
     <string name="select_file">Select Video File</string>
+    <string name="tag_hint">Enter Tags (seperated by commas)</string>
+    <string name="video_description">Video Description</string>
+    <string name="btn_upload_video">Upload Video</string>
 
 </resources>

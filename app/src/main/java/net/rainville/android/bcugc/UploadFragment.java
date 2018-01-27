@@ -1,14 +1,11 @@
 package net.rainville.android.bcugc;
 
 import android.app.Activity;
-import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.ParcelFileDescriptor;
-import android.provider.MediaStore;
 import android.provider.OpenableColumns;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -16,6 +13,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.amazonaws.mobile.client.AWSMobileClient;
@@ -26,20 +26,14 @@ import com.amazonaws.mobileconnectors.s3.transferutility.TransferListener;
 import com.amazonaws.services.s3.AmazonS3Client;
 
 import org.json.JSONException;
+import org.w3c.dom.Text;
 
 import java.io.File;
-import java.io.FileDescriptor;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URLEncoder;
-
-
-import static android.content.ContentValues.TAG;
 
 
 /**
@@ -62,6 +56,15 @@ public class UploadFragment extends Fragment {
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
+
+    // UI variables
+    private Button mBtnSelectFile;
+    private EditText mEditTitle;
+    private EditText mEditDescription;
+    private EditText mEditTags;
+    private Button mBtnUpload;
+    private ProgressBar mProgressBar;
+    private TextView mStatusText;
 
     private OnFragmentInteractionListener mListener;
 
@@ -101,9 +104,9 @@ public class UploadFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_upload, container, false);
-        Button btnSelectFile = (Button)view.findViewById(R.id.btn_select_file);
+        mBtnSelectFile = (Button)view.findViewById(R.id.btnSelectFile);
 
-        btnSelectFile.setOnClickListener(new View.OnClickListener() {
+        mBtnSelectFile.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 // Toast.makeText(getContext(), "Select a file", Toast.LENGTH_SHORT).show();
@@ -114,6 +117,15 @@ public class UploadFragment extends Fragment {
                 startActivityForResult(intent, READ_REQUEST_CODE);
             }
         });
+
+        mEditTitle = (EditText)view.findViewById(R.id.editTitle);
+        mEditDescription = (EditText)view.findViewById(R.id.editDescription);
+        mEditTags = (EditText)view.findViewById(R.id.editTags);
+        mProgressBar = view.findViewById(R.id.progressBar);
+        mStatusText = view.findViewById(R.id.statusText);
+
+        mBtnUpload = view.findViewById(R.id.btnUpload);
+
         return view;
     }
 
@@ -134,8 +146,14 @@ public class UploadFragment extends Fragment {
             if (resultData != null) {
                 uri = resultData.getData();
                 Log.i(TAG, "Uri: " + uri.toString());
-                String displayName = dumpVideoMetaData(uri);
-                uploadData(uri, displayName);
+                String displayName = getDisplayName(uri);
+
+                mEditTitle.setText(displayName);
+                mEditTitle.setVisibility(View.VISIBLE);
+                mEditDescription.setVisibility(View.VISIBLE);
+                mEditTags.setVisibility(View.VISIBLE);
+                mBtnUpload.setVisibility(View.VISIBLE);
+                // uploadData(uri, displayName);
             }
         }
     }
@@ -180,7 +198,7 @@ public class UploadFragment extends Fragment {
         void onFragmentInteraction(Uri uri);
     }
 
-    public String dumpVideoMetaData(Uri uri) {
+    public String getDisplayName(Uri uri) {
 
         String displayName = null;
         // The query, since it only applies to a single document, will only return
