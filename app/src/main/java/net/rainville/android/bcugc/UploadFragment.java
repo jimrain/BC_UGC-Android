@@ -57,6 +57,12 @@ public class UploadFragment extends Fragment {
     private String mParam1;
     private String mParam2;
 
+    // BC CMS Variables
+    // JR - I need to find a better place to stash these and make them configurable.
+    private static final String AccountId = "4517911906001";
+    private static final String ClientId = "68cee4a7-6f8f-4e07-9e7d-33480279f1ad";
+    private static final String ClientSecret = "QAszeOF1o2W2p2iJvqdGo5uOhXFiBs22CFabc1yoOn6OwMNY-JF1fqkeHUXkO_j5WYPV8WRm5WEsYWHlqrZakw";
+
     // UI variables
     private Button mBtnSelectFile;
     private EditText mEditTitle;
